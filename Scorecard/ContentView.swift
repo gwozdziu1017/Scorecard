@@ -6,16 +6,125 @@
 //
 
 import SwiftUI
+import Combine
+
+enum Corners: String, CaseIterable {
+    case blue
+    case red
+}
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+    @State var isFiveRound: Bool = false
+    @State var finalBlueScore: Int = 0
+    @State var finalRedScore: Int = 0
+    
+    @State var currentRoundScoreBlue: Int = 0
+    @State var currentRoundScoreRed: Int = 0
+
+    @State var blueScoresArray: [Int] = [0, 0, 0, 0, 0]
+    @State var redScoresArray: [Int] = [0,0,0,0,0]
+    
+    @State var finalMessage: String = ""
+    @State var textFieldText1: String = ""
+    @State private var textFieldText2: String = ""
+
+    let points: [Int] = [10, 9, 8]
+
+    func getWinner() -> Corners? {
+        if self.finalBlueScore > self.finalRedScore {
+            return Corners.blue
         }
-        .padding()
+        else if self.finalBlueScore < self.finalRedScore {
+            return Corners.red
+        }
+        else {
+            return nil
+        }
+    }
+    
+    func getFinalMessage() -> String {
+        let output: String = "blue: " +
+            String(self.sumScoreFromRounds(scoresArray: blueScoresArray))
+        + " red: " + String(self.sumScoreFromRounds(scoresArray: redScoresArray))
+        return output
+    }
+    
+    func getNumberOfRounds() -> Int {
+        return isFiveRound ? 5 : 3
+    }
+
+    func getRoundsArray(numberOfRounds: Int) -> [Int] {
+        return isFiveRound ? Array(1...numberOfRounds) : Array(1...numberOfRounds)
+    }
+    
+    func sumScoreFromRounds(scoresArray: [Int]) -> Int {
+        var sum = 0
+        for score in scoresArray {
+            sum += score
+        }
+        return sum
+    }
+
+    func finalizeButton() -> some View {
+        return HStack{
+            Button("Finalize"){
+                self.finalMessage = getFinalMessage()
+            }
+            Text(self.finalMessage)
+        }
+    }
+
+    func hStackWithPickersForRoundForBothCorners(roundNumber: Int) -> some View {
+        HStack() {
+            Picker("Select", selection: $blueScoresArray[roundNumber - 1]) {
+                ForEach(points, id: \.self) {elem in
+                    Text(String(elem)).tag("x")
+                }
+                
+            }.pickerStyle(.menu)
+
+            Spacer()
+            Picker("Select", selection: $redScoresArray[roundNumber - 1]) {
+                ForEach(points, id: \.self) {elem in
+                    Text(String(elem)).tag("x")
+                }
+            }.pickerStyle(.menu)
+        }
+    }
+
+    func vStackWithPickersForBothCorners() -> some View {
+        VStack {
+            hStackWithPickersForRoundForBothCorners(roundNumber: 1)
+            hStackWithPickersForRoundForBothCorners(roundNumber: 2)
+            hStackWithPickersForRoundForBothCorners(roundNumber: 3)
+            hStackWithPickersForRoundForBothCorners(roundNumber: 4).disabled(!isFiveRound)
+            hStackWithPickersForRoundForBothCorners(roundNumber: 5).disabled(!isFiveRound)
+        }
+    }
+
+    func toogleIsFiveRoundBout() -> some View {
+        Toggle("Five round bout", isOn: $isFiveRound)
+    }
+
+    func hStacksWithCornerColors() -> some View {
+        HStack() {
+            Text("Blue")
+                .font(.system(size: 30, weight: .bold, design: .default))
+                .foregroundColor(.blue)
+            Spacer()
+            Text("Red")
+                .font(.system(size: 30, weight: .bold, design: .default))
+                .foregroundColor(.red)
+        }
+    }
+
+    var body: some View {
+        VStack() {
+            toogleIsFiveRoundBout()
+            hStacksWithCornerColors()
+            vStackWithPickersForBothCorners()
+            finalizeButton()
+        }
     }
 }
 
