@@ -17,16 +17,11 @@ struct ContentView: View {
     @State var isFiveRound: Bool = false
     @State var finalBlueScore: Int = 0
     @State var finalRedScore: Int = 0
-    
-    @State var currentRoundScoreBlue: Int = 0
-    @State var currentRoundScoreRed: Int = 0
 
     @State var blueScoresArray: [Int] = [0, 0, 0, 0, 0]
-    @State var redScoresArray: [Int] = [0,0,0,0,0]
+    @State var redScoresArray: [Int] = [0, 0, 0, 0, 0]
     
     @State var finalMessage: String = ""
-    @State var textFieldText1: String = ""
-    @State private var textFieldText2: String = ""
 
     let points: [Int] = [10, 9, 8]
 
