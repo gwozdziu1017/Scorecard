@@ -9,8 +9,8 @@ import SwiftUI
 import Combine
 
 enum Corners: String, CaseIterable {
-    case blue
-    case red
+    case Blue
+    case Red
 }
 
 struct ContentView: View {
@@ -27,21 +27,42 @@ struct ContentView: View {
 
     func getWinner() -> Corners? {
         if self.finalBlueScore > self.finalRedScore {
-            return Corners.blue
+            return Corners.Blue
         }
         else if self.finalBlueScore < self.finalRedScore {
-            return Corners.red
+            return Corners.Red
         }
         else {
             return nil
         }
     }
-    
-    func getFinalMessage() -> String {
-        let output: String = "blue: " +
-            String(self.sumScoreFromRounds(scoresArray: blueScoresArray))
-        + " red: " + String(self.sumScoreFromRounds(scoresArray: redScoresArray))
+
+    func calculateFinalScoresForBothCorners() {
+        finalBlueScore = sumScoreFromRounds(scoresArray: blueScoresArray)
+        finalRedScore = sumScoreFromRounds(scoresArray: redScoresArray)
+    }
+
+    func buildFinalMessage() -> String {
+        calculateFinalScoresForBothCorners()
+
+        let winner = getWinner()
+        var output: String = ""
+
+        if winner == .Blue {
+            output = "Winner is BLUE corner\n"
+        }
+        else if winner == .Red {
+            output = "Winner is RED corner\n"
+        }
+        else {
+            output = "It's a draw\n"
+        }
+        output += "Blue: " + String(finalBlueScore) + "\nRed: " + String(finalRedScore)
         return output
+    }
+
+    func getFinalMessage() -> String {
+        return buildFinalMessage()
     }
     
     func getNumberOfRounds() -> Int {
